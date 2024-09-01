@@ -3,6 +3,7 @@ const express = require('express');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const webDomain = process.env.WEB_DOMAIN || "";
 
 const app = express();
 app.use(cors());
@@ -26,8 +27,8 @@ app.post('/create-checkout-session', async (req, res) => {
       }],
       metadata: customMetadata,
       mode: 'payment',
-      success_url: 'https://yourwebsite.com/success',
-      cancel_url: 'https://yourwebsite.com/cancel',
+      success_url: `https://${webDomain}/success`,
+      cancel_url: `https://${webDomain}/cancel`,
     });
 
     res.json({ id: session.id });
