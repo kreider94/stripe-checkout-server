@@ -10,7 +10,7 @@ export default async function handler(req, res) {
   await new Promise((resolve) => cors(req, res, resolve));
   
   if (req.method === 'POST') {
-    const { productName, customMetadata } = req.body;
+    const { productName = "", customMetadata = "" } = req.body;
 
     try {
       const session = await stripe.checkout.sessions.create({
