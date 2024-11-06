@@ -41,8 +41,8 @@ export default async function handler(req, res) {
         }],
         metadata: customMetadata, // Ensure this is an object
         mode: 'payment',
-        success_url: `https://${process.env.WEB_DOMAIN}/success`,
-        cancel_url: `https://${process.env.WEB_DOMAIN}/cancel`,
+        success_url: `https://${process.env.WEB_DOMAIN}/`,
+        cancel_url: `https://${process.env.WEB_DOMAIN}/`,
       });
 
       res.status(200).json({ id: session.id });
