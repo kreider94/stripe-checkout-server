@@ -2,15 +2,29 @@ import Cors from 'cors';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+function runMiddleware(req, res, fn) {
+  return new Promise((resolve, reject) => {
+    fn(req, res, (result) => {
+      if (result instanceof Error) return reject(result);
+      return resolve(result);
+    });
+  });
+}
+
 const cors = Cors({
   methods: ['GET', 'POST', 'OPTIONS'],
 });
 
 export default async function handler(req, res) {
-  await new Promise((resolve) => cors(req, res, resolve));
-  
+  await runMiddleware(req, res, cors);
+
   if (req.method === 'POST') {
-    const { productName = "", customMetadata = "" } = req.body;
+    console.log(req.body);
+    console.log("Stripe Secret Key:", process.env.STRIPE_SECRET_KEY ? "Set" : "Not Set");
+    console.log("Web Domain:", process.env.WEB_DOMAIN);
+
+    const { productName = "", customMetadata = {} } = req.body;
 
     try {
       const session = await stripe.checkout.sessions.create({
@@ -21,11 +35,11 @@ export default async function handler(req, res) {
             product_data: {
               name: productName,
             },
-            unit_amount: 1000, // Example amount (in cents)
+            unit_amount: 1000,
           },
           quantity: 1,
         }],
-        metadata: customMetadata,
+        metadata: customMetadata, // Ensure this is an object
         mode: 'payment',
         success_url: `https://${process.env.WEB_DOMAIN}/success`,
         cancel_url: `https://${process.env.WEB_DOMAIN}/cancel`,
